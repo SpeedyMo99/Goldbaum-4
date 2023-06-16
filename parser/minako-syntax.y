@@ -56,9 +56,259 @@
 
 %%
 
-program:
+program: declassignment ';' program {}
+
+	|functiondefinition program {}
+
+	| /* empty */ {}
+
 	;
 
+
+
+functiondefinition: type id '(' parameterlist ')' '{' statementlist '}' {}
+
+	|type id '(' ')' '{' statementlist '}' {}
+
+	;
+
+
+
+parameterlist: type id parameterlist2 {}
+
+	;
+
+
+
+parameterlist2: ',' type id parameterlist2 {}
+
+	| /* empty */ {}
+
+	;
+
+
+
+functioncall: id '(' ')' {}
+
+	|id '(' assignment A ')' {}
+
+	;
+
+
+
+A: ',' assignment A {}
+
+  	|/* empty */ {}
+
+  	;
+
+
+
+statementlist: block statementlist {}
+
+	|/* empty */ {}
+
+	;
+
+
+
+block: '{' statementlist '}' {}
+
+	|statement {}
+
+	;
+
+
+
+statement: ifstatement {}
+
+	|forstatement {}
+
+	|whilestatement {}
+
+	|returnstatement ';' {}
+
+	|dowhilestatement ';' {}
+
+	|printf ';' {}
+
+	|declassignment ';' {}
+
+	|statassignment ';' {}
+
+	|functioncall ';' {}
+
+	;
+
+
+
+statblock: '{' statementlist '}' {}
+
+	|statement {}
+
+	;
+
+
+
+ifstatement: KW_IF '(' assignment ')' statblock {}
+
+	|KW_IF '(' assignment ')' statblock KW_ELSE statblock {}
+
+	;
+
+
+
+forstatement: KW_FOR '(' statassignment ';' expr ';' statassignment ')' statblock {}
+
+	|KW_FOR '(' declassignment ';' expr ';' statassignment ')' statblock {}
+
+	;
+
+
+
+dowhilestatement: KW_DO statblock KW_WHILE '(' assignment ')' {}
+
+	;
+
+
+
+whilestatement: KW_WHILE '(' assignment ')' statblock {}
+
+	;
+
+
+
+returnstatement: KW_RETURN {}
+
+	|KW_RETURN assignment {}
+
+	;
+
+
+
+printf: KW_PRINTF '(' assignment ')' {}
+
+	|KW_PRINTF '(' CONST_STRING ')' {}
+
+	;
+
+
+
+declassignment: type id {}
+
+	|type id '=' assignment {}
+
+	;
+
+
+
+statassignment: id '=' assignment {}
+
+	;
+
+
+
+assignment: statassignment {}
+
+	|expr {}
+
+	;
+
+
+
+expr: simpexpr B {}
+
+	;
+
+
+
+B: "==" simpexpr {}
+
+	|"!=" simpexpr {}
+
+	|"<=" simpexpr {}
+
+	|">=" simpexpr {}
+
+	|"<" simpexpr {}
+
+	|">" simpexpr {}
+
+	|/* empty */
+
+	;
+
+
+
+simpexpr: '-' term C {}
+
+	|term C {}
+
+	;
+
+
+
+C: '+' term C {}
+
+	|'-' term C {}
+
+	| "||" term C {}
+
+	|/* empty */ {}
+
+	;
+
+
+
+term: factor D {}
+
+	;
+
+
+
+D: '*' factor D {}
+
+	|'/' factor D {}
+
+	| "&&" factor D {}
+
+	|/* empty */ {}
+
+	;
+
+
+
+factor: CONST_INT {}
+
+	|CONST_FLOAT {}
+
+	|CONST_BOOLEAN {}
+
+	|functioncall {}
+
+	|id {}
+
+	|'(' assignment ')' {}
+
+	;
+
+
+
+type: KW_BOOLEAN {}
+
+	|KW_FLOAT {}
+
+	|KW_INT {}
+
+	|KW_VOID {}
+
+	;
+
+
+
+id: ID {}
+
+	;
 
 %%
 
